@@ -1,0 +1,6 @@
+---
+
+- include: kali.yml
+  tags: kali
+
+...

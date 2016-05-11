@@ -1,0 +1,36 @@
+---
+
+kali:
+  gpg_key_id: ED444FF07D8D0BF6
+  assumed_packages:
+    - apt-utils
+    - aptitude
+    - libgnutls30
+    - libcups2
+    - kali-archive-keyring
+  packages:
+    - kali-linux
+    - kali-linux-full
+    - kali-desktop-lxde
+    - grub2
+
+debconf:
+  mysql_server_56:
+    - 'mysql-server/root_password_again password'
+    - 'mysql-server/root_password password'
+    - 'mysql-server-5.5/postrm_remove_databases boolean false'
+    - 'mysql-server-5.5/start_on_boot boolean true'
+    - 'mysql-server-5.5/nis_warning note'
+    - 'mysql-server-5.5/really_downgrade boolean false'
+  kismet:
+    - 'kismet/install-setuid boolean false'
+    - 'kismet/install-users string'
+  sslh:
+    - 'sslh/inetd_or_standalone select standalone'
+  grub_installer:
+    - 'grub-installer/only_debian boolean true'
+    - 'grub-installer/with_other_os boolean true'
+  grub_pc:
+    - 'grub-pc/install_devices multiselect /dev/xvda'
+
+...

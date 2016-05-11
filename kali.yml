@@ -1,0 +1,10 @@
+---
+
+- name: kali-linux-based-debian
+  hosts: kali_debian
+  become: yes
+  gather_facts: no
+  roles:
+    - kali
+
+...

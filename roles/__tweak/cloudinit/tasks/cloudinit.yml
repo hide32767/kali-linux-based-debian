@@ -1,0 +1,11 @@
+---
+
+- name: be sure to rewrite apt/source.list by cloudinit disabled
+  copy: >
+    src=99-local-mirror-only.cfg
+    dest=/etc/cloud/cloud.cfg.d/99-local-mirror-only.cfg
+    owner=root
+    group=root
+    mode=644
+
+...

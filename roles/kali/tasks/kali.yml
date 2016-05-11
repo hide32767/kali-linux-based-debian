@@ -1,0 +1,80 @@
+---
+
+###########
+# initial #
+###########
+- name: checking to python for Ansible installed
+  raw: dpkg -l python-apt | fgrep -q '<none>'
+  register: pyapt
+  always_run: yes
+  failed_when: no
+  changed_when: pyapt.rc == 0
+
+- name: be sure python for Ansible installed
+  raw: apt-get -y upgrade && apt-get -y install python python-apt
+  when: pyapt|changed
+
+##############
+# Repository #
+##############
+- name: be sure our source.list existed
+  copy: >
+    src=sources.list
+    dest=/etc/apt/sources.list
+    owner=root
+    group=root
+    mode=644
+
+- name: be sure Kali-Linux gpg-key in keylist of root imported
+  command: gpg --keyserver pgpkeys.mit.edu --recv-key {{ kali.gpg_key_id }}
+
+- name: be sure Kali-Linux gpg-key as apt-key imported
+  shell: gpg -a --export {{ kali.gpg_key_id }} | apt-key add -
+
+####################
+# assumed packages #
+####################
+- name: be sure several assumed packages installed
+  apt: name={{ item }} update_cache=yes
+  with_items: '{{ kali.assumed_packages }}'
+
+###########
+# debconf #
+###########
+- name: be sure debconf of mysql-server-5.6 configured
+  shell: echo "mysql-server-5.6 {{ item }}" | debconf-set-selections
+  with_items: '{{ debconf.mysql_server_56 }}'
+
+- name: be sure debconf of kismet configured
+  shell: echo "kismet {{ item }}" | debconf-set-selections
+  with_items: '{{ debconf.kismet }}'
+
+- name: be sure debconf of sslh configured
+  shell: echo "sslh {{ item }}" | debconf-set-selections
+  with_items: '{{ debconf.sslh }}'
+
+- name: be sure debconf of grub-installer configured
+  shell: echo "grub-installer {{ item }}" | debconf-set-selections
+  with_items: '{{ debconf.grub_installer }}'
+
+- name: be sure debconf of grub-pc configured
+  shell: echo "grub-pc {{ item }}" | debconf-set-selections
+  with_items: '{{ debconf.grub_pc }}'
+
+#######################
+# Kali-Linux packages #
+#######################
+- name: be sure several Kali-Linux packages installed
+  apt: name={{ item }} update_cache=yes dpkg_options=force-confdef,force-confnew
+  with_items: '{{ kali.packages }}'
+
+- name: be sure all packages upgraded
+  apt: upgrade=yes update_cache=yes
+
+###########
+# cleanup #
+###########
+- name: be sure things arround APT cleanup-ed
+  shell: apt-get -y autoremove --purge; apt-get -y clean
+
+...
